@@ -5,14 +5,16 @@ import { getMemberList } from './api/list.api';
 import { mapMemberListToMv } from './list.mappers';
 import { TextInputComponent } from '../../common';
 import { useDebounce } from 'use-debounce';
+import { OrganizationContext } from '../../core/providers/organization/organization.provider';
 
 export const ListContainer : React.FC = () => {
   const [members, setMembers] = React.useState<MemberEntity[]>([]);
-  const [organization, setOrganization] = React.useState<string>('lemoncode');
-  const [debouncedFilter] = useDebounce(organization, 500);
+  const {organizationName, setOrganizationName } = React.useContext(OrganizationContext)
+  const [debouncedFilter] = useDebounce(organizationName, 500);
   
   React.useEffect(() => {
-      getMemberList(organization)
+    console.log(organizationName)
+      getMemberList(organizationName)
       .then((results) => mapMemberListToMv(results))
       .then((results) => setMembers(results));
   }, [debouncedFilter]);
@@ -21,8 +23,10 @@ export const ListContainer : React.FC = () => {
     <>
     <div className='input'>
       <TextInputComponent
-              value={organization}
-              onChange={(e) => setOrganization(e)}
+              value={organizationName}
+              onChange={(e) => {
+                setOrganizationName(e)
+              }}
               placeholder="Buscar organización..." 
               label='Search organization:'
       />
